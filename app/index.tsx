@@ -3,9 +3,9 @@ import * as React from 'react';
 import { MapView, Camera, UserLocation, PointAnnotation } from "@maplibre/maplibre-react-native";
 import * as Location from 'expo-location';
 import { useEffect, useRef, useState } from 'react';
-import { Dimensions, TouchableOpacity, View } from 'react-native';
+import { Dimensions, TouchableOpacity, View, ScrollView, RefreshControl } from 'react-native';
 import { supabase } from '@/util/supabase';
-import { Card, CardHeader } from '@/components/ui/card';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 
 type Shop = {
   id: string;
@@ -17,12 +17,14 @@ export default function Screen() {
 const [shops, setShops] = useState<Shop[]>([])
 const [userCoords, setUserCoords] = useState<[number, number] | null>(null)
 const [selectedShop, setSelectedShop] = useState<Shop | null>(null)
+const [refreshing, setRefreshing] = useState(false);
 const cameraRef = useRef<Camera>(null);
 const screenHeight = Dimensions.get('window').height;
   useEffect(() => {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync()
       if (status !== 'granted') return
+      
       
       const loc = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
@@ -48,10 +50,11 @@ const screenHeight = Dimensions.get('window').height;
     })()
   }, [])
   const handleShopSelect = (shop: Shop) => {
+    console.log('Selected shoppp:', shop);
     setSelectedShop(shop);
     cameraRef.current?.setCamera({
       centerCoordinate: shop.coords,
-      zoomLevel: 16,
+      zoomLevel: 20,
       animationDuration: 1000,
     });
   }
@@ -100,24 +103,32 @@ const screenHeight = Dimensions.get('window').height;
           </PointAnnotation>
         ))}
       </MapView>
+      <ScrollView style={{ maxHeight: screenHeight * 0.5, marginTop: 20 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => {
+        setRefreshing(true);
+        setTimeout(() => setRefreshing(false), 1000);
+      }}/>}>
       {shops.length > 0 && (
         shops.map((shop) => (
             <TouchableOpacity key={shop.id} onPress={() => {
-              cameraRef.current?.setCamera({
-                centerCoordinate: shop.coords,
-                zoomLevel: 16,
-                animationDuration: 1000,
-              });
+              // cameraRef.current?.setCamera({
+              //   centerCoordinate: shop.coords,
+              //   zoomLevel: 16,
+              //   animationDuration: 1000,
+              // });
               handleShopSelect(shop);
             }}>
           <Card className='mt-4' style={{ backgroundColor: selectedShop?.id === shop.id ? 'grey' : 'transparent', borderWidth: 2 }}>
             <CardHeader>
               <Text className='text-lg font-bold'>{shop.name}</Text>
             </CardHeader>
+            {selectedShop?.id === shop.id && <CardContent>
+              <Text>Shop description</Text>
+            </CardContent>}
           </Card>
           </TouchableOpacity>
         ))
       )}
+      </ScrollView>
     </View>
   );
 }
