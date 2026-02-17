@@ -1,4 +1,4 @@
-package com.pablosko98.shopadmin
+package com.pablosko98.shopadmin.debug
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

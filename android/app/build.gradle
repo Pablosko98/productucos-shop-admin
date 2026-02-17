@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.pablosko98.shopadmin'
+    namespace 'com.pablosko98.shopadmin.debug'
     defaultConfig {
-        applicationId 'com.pablosko98.shopadmin'
+        applicationId 'com.pablosko98.shopadmin.debug'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -1,4 +1,4 @@
-package com.pablosko98.shopadmin
+package com.pablosko98.shopadmin.debug
 
 import android.app.Application
 import android.content.res.Configuration
